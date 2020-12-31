@@ -1,0 +1,15 @@
+{
+    "countdown-timer-switch" : {
+        "label": {
+            "name": "Name",
+            "size": "Size",
+            "group": "Group",
+            "countdown": "Countdown",
+            "countdowns": "Countdowns"
+        },
+        "ui": {
+            "startedAt": "Started at",
+            "endsAt": "Ends at"
+        }
+    }
+}

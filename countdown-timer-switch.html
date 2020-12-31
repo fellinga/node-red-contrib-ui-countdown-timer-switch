@@ -1,0 +1,160 @@
+<!--
+MIT License
+
+Copyright (c) 2020 Mario Fellinger
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+-->
+
+<script type="text/x-red" data-template-name="ui_countdown_timer_switch">
+    <div class="form-row" id="template-row-group">
+       <label for="node-input-group"><i class="fa fa-table"></i> <span data-i18n="countdown-timer-switch.label.group"></span> </label>
+       <input type="text" id="node-input-group">
+    </div>
+    <div class="form-row" id="template-row-size">
+        <label><i class="fa fa-object-group"></i> <span data-i18n="countdown-timer-switch.label.size"></span> </label>
+        <input type="hidden" id="node-input-width">
+        <input type="hidden" id="node-input-height">
+        <button class="editor-button" id="node-input-size"></button>
+    </div>
+    <label for="form-row node-input-countdown-container-row"><i class="fa fa-clock-o"></i> <span data-i18n="countdown-timer-switch.label.countdowns"></span> </label>
+    <div class="form-row node-input-countdown-container-row">
+        <ol id="node-input-countdown-container"></ol>
+    </div>
+    <div class="form-row">
+        <label style="width:auto" for="node-input-onvalue"><i class="fa fa-envelope-o"></i> When clicked, send:</label>
+    </div>
+    <div class="form-row">
+        <label for="node-input-onvalue" style="padding-left:25px; margin-right:-25px">On Payload</label>
+        <input type="text" id="node-input-onvalue" style="width:70%">
+        <input type="hidden" id="node-input-onvalueType">
+    </div>
+    <div class="form-row">
+        <label for="node-input-offvalue" style="padding-left:25px; margin-right:-25px">Off Payload</label>
+        <input type="text" id="node-input-offvalue" style="width:70%">
+        <input type="hidden" id="node-input-offvalueType">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="countdown-timer-switch.label.name"></span> </label>
+        <input type="text" id="node-input-name">
+    </div>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('ui_countdown_timer_switch', {
+        category: 'dashboard',
+        color: 'rgb( 63, 173, 181)',
+        defaults: {
+            name: {value: ''},
+            group: {type: 'ui_group', required:true},
+            order: {value: 0},
+            width: {
+                value: 0,
+                validate: function(v) {
+                    let valid = true
+                    const width = v||0;
+                    const currentGroup = $('#node-input-group').val()|| this.group;
+                    const groupNode = RED.nodes.node(currentGroup);
+                    valid = !groupNode || +width <= +groupNode.width;
+                    $("#node-input-size").toggleClass("input-error",!valid);
+                    return valid;
+                }
+            },
+            height: {value: 0},
+            countdowns: {value: ["5", "10", "15", "30"]},
+            onvalue: {value: true, required:true, validate: (RED.validators.hasOwnProperty('typedInput')?RED.validators.typedInput('onvalueType'):function(v) { return true})},
+            onvalueType: {value: 'bool'},
+            offvalue: {value: false, required:true, validate: (RED.validators.hasOwnProperty('typedInput')?RED.validators.typedInput('offvalueType'):function(v) { return true})},
+            offvalueType: {value: 'bool'},
+        },
+        inputs:1,
+        outputs:1,
+        icon: "av_timer.png",
+        paletteLabel: "ui countdown switch",
+        label: function() { return this.name || "ui countdown switch"; },
+        oneditprepare: function() {
+            const node = this;
+
+            $("#node-input-size").elementSizer({
+                width: "#node-input-width",
+                height: "#node-input-height",
+                group: "#node-input-group"
+            });
+
+            $('#node-input-onvalue').typedInput({
+                default: 'str',
+                typeField: $("#node-input-onvalueType"),
+                types: ['str','num','bool','json','bin','date','flow','global']
+            });
+
+            $('#node-input-offvalue').typedInput({
+                default: 'str',
+                typeField: $("#node-input-offvalueType"),
+                types: ['str','num','bool','json','bin','date','flow','global']
+            });
+
+            $("#node-input-countdown-container").css('min-height','222px').css('min-width','450px').editableList({
+                addItem: function(row, index, data) {
+                    const current = index+1;
+                    
+                    const label = $('<span/>', {class:"node-input-countdown-label", text:" " + current});
+                    $(row).html(label);
+                    
+                    const numberInput = $('<input/>',{class:"node-input-countdown-name",type:"text",style:"margin-left: 5px;", value:data.number || 5});
+                    numberInput.appendTo(row).typedInput({default:'num',types:['num']});
+                },
+                removeItem: function(opt) {
+                    const countdowns = $("#node-input-countdown-container").editableList('items');
+                    countdowns.each(function(i) {
+                        $(this).find(".node-input-countdown-label").html(i+1);
+                    });
+
+                    if (countdowns.length === 0) $("#node-input-countdown-container").editableList('addItem',{number:"5"});
+                },
+                sortItems: function(rules) {
+                    const countdowns = $("#node-input-countdown-container").editableList('items');
+                    countdowns.each(function(i) {
+                        $(this).find(".node-input-countdown-label").html(i+1);
+                    });
+                },
+                removable: true,
+                sortable: true
+            });
+
+            for (let i=0;i<this.countdowns.length;i++) {
+                $("#node-input-countdown-container").editableList('addItem',{number:this.countdowns[i]});
+            }
+        },
+        oneditsave: function() {
+            const node = this;
+            node.countdowns = [];
+            const countdowns = $("#node-input-countdown-container").editableList('items');
+
+            countdowns.each(function(i) {
+                const countdown = $(this);
+                let countdownName = countdown.find(".node-input-countdown-name").typedInput('value');
+                if (countdownName != "" && !node.countdowns.includes(countdownName)) {
+                    node.countdowns.push(countdownName);
+                }
+            });
+        },
+        oneditresize: function(size) {
+        }
+    });
+</script>
