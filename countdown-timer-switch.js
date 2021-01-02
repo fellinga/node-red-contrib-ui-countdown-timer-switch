@@ -36,6 +36,10 @@ module.exports = function(RED) {
 				padding: 0 2px 0 6px;
 				overflow-x: hidden;
 			}
+			#` + divPrimary + ` md-select md-select-value {
+				color: var(--nr-dashboard-widgetTextColor);
+				border-color: var(--nr-dashboard-pageTitlebarBackgroundColor);
+			}
 			#` + divPrimary + ` .md-button {
 				margin: 0 5px 0 0;
 				width: 100%;
@@ -49,7 +53,16 @@ module.exports = function(RED) {
 		<div id="` + divPrimary + `" ng-init='init(` + JSON.stringify(config) + `)'>
 			<div layout="row" layout-align="space-between center" style="max-height: 50px;">
 				<div flex="80" layout="row">
+					${config.showDropdown ? `
+					<md-input-container style="width: 100%;">
+						<md-select class="nr-dashboard-dropdown" ng-model="dropdownSelect" ng-change="dropdownChanged(dropdownSelect)" aria-label="Select a time">
+							<md-option value="null" selected> ${RED._("countdown-timer-switch.ui.selectDuration")} </md-option>
+							<md-option ng-repeat="countdown in countdowns" value={{countdowns[$index]}}> {{countdowns[$index]}} </md-option>
+						</md-select>
+					</md-input-container>
+					` : `
 					<md-button ng-repeat="countdown in countdowns" aria-label="start" ng-click="buttonPressed(countdown)"> {{countdown}} </md-button>
+					`}
 				</div>
 				<div flex="20" layout="row" layout-align="end center">
 					<md-switch aria-label="switch" ng-change="switchChanged(switchState)" ng-model="switchState" ng-disabled="${config.disableSwitch}"> </md-switch>
@@ -57,12 +70,12 @@ module.exports = function(RED) {
 			</div>
 			<div layout="row" style="max-height: 60px;">
 				<md-input-container flex="50" ng-show="started">
-					<label style="color: var(--nr-dashboard-widgetTextColor)">` + RED._("countdown-timer-switch.ui.startedAt") + `</label>
+					<label style="color: var(--nr-dashboard-widgetTextColor)"> ${RED._("countdown-timer-switch.ui.startedAt")} </label>
 					<input id="startsAt-` + uniqueId + `" value="00:00:00" type="time" disabled required md-no-asterisk step="1" style="color: var(--nr-dashboard-widgetTextColor)">
 					<span class="validity"></span>
 				</md-input-container>
 				<md-input-container flex="50" ng-show="ends">
-					<label style="color: var(--nr-dashboard-widgetTextColor)">` + RED._("countdown-timer-switch.ui.endsAt") + `</label>
+					<label style="color: var(--nr-dashboard-widgetTextColor)"> ${RED._("countdown-timer-switch.ui.endsAt")} </label>
 					<input id="endsAt-` + uniqueId + `" value="00:00:00" type="time" disabled required md-no-asterisk step="1" style="color: var(--nr-dashboard-widgetTextColor)">
 					<span class="validity"></span>
 				</md-input-container>
@@ -178,6 +191,11 @@ module.exports = function(RED) {
 						$scope.$watch('msg', function() {
 							$scope.getState();
 						});
+
+						$scope.dropdownChanged = function(minutes) {
+							$scope.dropdownSelect = null;
+							$scope.buttonPressed(minutes);
+						}
 
 						$scope.buttonPressed = function(minutes) {
 							$scope.setServerTimeout(minutes*60*1000);

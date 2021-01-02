@@ -5,11 +5,17 @@
             "size": "Size",
             "group": "Group",
             "countdown": "Countdown",
-            "countdowns": "Countdowns"
+            "countdowns": "Countdowns",
+            "whenClicked": "When clicked, send:",
+            "whenOnClicked": "On Payload",
+            "whenOffClicked": "Off Payload",
+            "dropdown": "Dropdown"
         },
+        "dropdownDesc": "Show a dropdown menu instead of buttons",
         "ui": {
             "startedAt": "Started at",
-            "endsAt": "Ends at"
+            "endsAt": "Ends at",
+            "selectDuration": "Select duration"
         }
     }
 }

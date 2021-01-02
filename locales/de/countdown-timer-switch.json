@@ -5,11 +5,17 @@
             "size": "Größe",
             "group": "Gruppe",
             "countdown": "Countdown",
-            "countdowns": "Countdowns"
+            "countdowns": "Countdowns",
+            "whenClicked": "Wenn geklickt, sende:",
+            "whenOnClicked": "Ein Payload",
+            "whenOffClicked": "Aus Payload",
+            "dropdown": "Auswahlfeld"
         },
+        "dropdownDesc": "Zeige ein Auswahlfeld anstatt der Buttons",
         "ui": {
             "startedAt": "Gestartet um",
-            "endsAt": "Läuft bis"
+            "endsAt": "Läuft bis",
+            "selectDuration": "Dauer auswählen"
         }
     }
 }
