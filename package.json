@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-ui-countdown-timer-switch",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A ui countdown timer switch for the Node-RED Dashboard",
   "main": "countdown-timer-switch.js",
   "scripts": {

@@ -115,15 +115,18 @@ SOFTWARE.
                 types: ['str','num','bool','json','bin','date','flow','global']
             });
 
-            $("#node-input-countdown-container").css('min-height','222px').css('min-width','450px').editableList({
+            $("#node-input-countdown-container").css('min-height','222px').editableList({
                 addItem: function(row, index, data) {
                     const current = index+1;
                     
-                    const label = $('<span/>', {class:"node-input-countdown-label", text:" " + current});
+                    const label = $('<span/>', {class:"node-input-countdown-label", text: current});
                     $(row).html(label);
                     
-                    const numberInput = $('<input/>',{class:"node-input-countdown-name",type:"text",style:"margin-left: 5px;", value:data.number || 5});
+                    const numberInput = $('<input/>',{class:"node-input-countdown-name",type:"text",style:"width: 50%; margin-left: 5px;", value:data.number || 5});
                     numberInput.appendTo(row).typedInput({default:'num',types:['num']});
+
+                    const finalspan = $('<span/>',{style:"margin-left: 5px; margin-top: 6px;"}).appendTo(row);
+                    finalspan.append(node._("countdown-timer-switch.label.minutes"));
                 },
                 removeItem: function(opt) {
                     const countdowns = $("#node-input-countdown-container").editableList('items');

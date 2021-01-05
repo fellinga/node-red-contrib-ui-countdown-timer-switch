@@ -1,7 +1,18 @@
 <script type="text/x-red" data-help-name="ui_countdown_timer_switch">
     <p>A ui countdown timer switch for the Node-RED Dashboard</p>
+    <p>This node behaves very much like a standard switch. It accepts incoming messages only
+        if the <code> msg.payload </code> matches the configured on/off payload and 
+        toggles the switch accordingly.
+    </p>
     <p>Each change in the state of the switch will generate
-        a <code>msg.payload</code> with the specified <b>On</b> and <b>Off</b> values.</p>
+        a <code>msg.payload</code> with the specified <b>On</b> and <b>Off</b> values.
+    </p>
+    <p>All entries in the countdown area are expected to be entered in <code>minutes</code>.
+        <ul>
+            <li> A value of <code>10</code> creates a countdown that runs for 10 minutes. </li>
+            <li> A value of <code>0.5</code> creates a countdown that runs for 30 seconds. </li>
+        </ul>
+    </p>
 
     <h3>References</h3>
     <ul>

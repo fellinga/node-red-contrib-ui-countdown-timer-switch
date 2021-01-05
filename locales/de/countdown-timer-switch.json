@@ -6,6 +6,7 @@
             "group": "Gruppe",
             "countdown": "Countdown",
             "countdowns": "Countdowns",
+            "minutes": "Minuten",
             "whenClicked": "Wenn geklickt, sende:",
             "whenOnClicked": "Ein Payload",
             "whenOffClicked": "Aus Payload",
