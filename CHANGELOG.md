@@ -1,6 +1,12 @@
 # Changelog
 
 ----------
+## [v1.1.2] - 2021-01-05
+
+### Fixed
+- dropdown initialization
+
+----------
 ## [v1.1.1] - 2021-01-05
 
 ### Fixed

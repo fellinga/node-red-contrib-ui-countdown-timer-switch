@@ -193,6 +193,7 @@ module.exports = function(RED) {
 						});
 
 						$scope.dropdownChanged = function(minutes) {
+							if (isNaN(minutes)) return;
 							$scope.dropdownSelect = null;
 							$scope.buttonPressed(minutes);
 						}
