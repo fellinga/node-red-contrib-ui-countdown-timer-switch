@@ -16,7 +16,10 @@
         "ui": {
             "startedAt": "Started at",
             "endsAt": "Ends at",
-            "selectDuration": "Select duration"
+            "selectDuration": "Select duration",
+            "shortHours": "h",
+            "shortMinutes": "m",
+            "shortSeconds": "s"
         }
     }
 }

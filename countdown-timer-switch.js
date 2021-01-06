@@ -56,8 +56,8 @@ module.exports = function(RED) {
 					${config.showDropdown ? `
 					<md-input-container style="width: 100%;">
 						<md-select class="nr-dashboard-dropdown" ng-model="dropdownSelect" ng-change="dropdownChanged(dropdownSelect)" aria-label="Select a time">
-							<md-option value="null" selected> ${RED._("countdown-timer-switch.ui.selectDuration")} </md-option>
-							<md-option ng-repeat="countdown in countdowns" value={{countdowns[$index]}}> {{countdowns[$index]}} </md-option>
+							<md-option value="null" selected> {{i18n.selectDuration}} </md-option>
+							<md-option ng-repeat="countdown in countdowns" value={{countdowns[$index]}}> {{minutesToReadable(countdowns[$index])}} </md-option>
 						</md-select>
 					</md-input-container>
 					` : `
@@ -70,12 +70,12 @@ module.exports = function(RED) {
 			</div>
 			<div layout="row" style="max-height: 60px;">
 				<md-input-container flex="50" ng-show="started">
-					<label style="color: var(--nr-dashboard-widgetTextColor)"> ${RED._("countdown-timer-switch.ui.startedAt")} </label>
+					<label style="color: var(--nr-dashboard-widgetTextColor)"> {{i18n.startedAt}} </label>
 					<input id="startsAt-` + uniqueId + `" value="00:00:00" type="time" disabled required md-no-asterisk step="1" style="color: var(--nr-dashboard-widgetTextColor)">
 					<span class="validity"></span>
 				</md-input-container>
 				<md-input-container flex="50" ng-show="ends">
-					<label style="color: var(--nr-dashboard-widgetTextColor)"> ${RED._("countdown-timer-switch.ui.endsAt")} </label>
+					<label style="color: var(--nr-dashboard-widgetTextColor)"> {{i18n.endsAt}} </label>
 					<input id="endsAt-` + uniqueId + `" value="00:00:00" type="time" disabled required md-no-asterisk step="1" style="color: var(--nr-dashboard-widgetTextColor)">
 					<span class="validity"></span>
 				</md-input-container>
@@ -118,9 +118,15 @@ module.exports = function(RED) {
 			}
 
 			this.setTimoutCallback = function setTimoutCallback(req, res) {
-				node.send({payload: setStatus(true)});
-				currentState.ends = currentState.started + Number(req.params.value);
+				activateTimer(Number(req.params.value));
 				res.end();
+			}
+
+			function activateTimer(millis) {
+				if (millis < 1 || millis > 2147483647) return;
+
+				node.send({payload: setStatus(true)});
+				currentState.ends = currentState.started + millis;
 
 				timeout = setTimeout(function() {
 					node.send({payload: setStatus(false)});
@@ -150,6 +156,8 @@ module.exports = function(RED) {
 				return value; 
 			}
 			
+			config.i18n = RED._("countdown-timer-switch.ui", { returnObjects: true });
+
 			if (checkConfig(config, node)) {
 				const done = ui.addWidget({
 					node: node,
@@ -162,12 +170,16 @@ module.exports = function(RED) {
 					storeFrontEndInputAsState: true,
 					persistantFrontEndValue : true,
 					beforeEmit: function (msg, value) {
-						if (value === RED.util.evaluateNodeProperty(config.onvalue,config.onvalueType,node)) {
-							setStatus(true);
-							node.send(msg);
-						} else if (value === RED.util.evaluateNodeProperty(config.offvalue,config.offvalueType,node)) {
-							setStatus(false);
-							node.send(msg);
+						if (msg.hasOwnProperty("countdown") && Number.isInteger(msg.countdown)) {
+							activateTimer(msg.countdown*60*1000);
+						} else {
+							if (value === RED.util.evaluateNodeProperty(config.onvalue,config.onvalueType,node)) {
+								setStatus(true);
+								node.send(msg);
+							} else if (value === RED.util.evaluateNodeProperty(config.offvalue,config.offvalueType,node)) {
+								setStatus(false);
+								node.send(msg);
+							}
 						}
 						
 						return {msg: msg};
@@ -185,6 +197,7 @@ module.exports = function(RED) {
 					initController: function ($scope) {
 						$scope.init = function (config) {
 							$scope.nodeId = config.id;
+							$scope.i18n = config.i18n;
 							$scope.countdowns = config.countdowns;
 						}
 
@@ -250,6 +263,13 @@ module.exports = function(RED) {
 									$scope.send({payload: "updateUis"});
 								}
 							});
+						}
+
+						$scope.minutesToReadable = function(minutes) {
+							const h = Math.floor(minutes / 60);
+							const m = Math.floor(minutes % 60);
+							const s = ((minutes - (h*60) - m) * 60).toFixed(0);
+							return (h > 0 ? h + $scope.i18n.shortHours + " " : "") + (m > 0 ? m + $scope.i18n.shortMinutes + " "  : "") + (s > 0 ? s + $scope.i18n.shortSeconds + " "  : "");
 						}
 
 						$scope.getElement = function(elementId) {

@@ -1,6 +1,12 @@
 # Changelog
 
 ----------
+## [v1.2.0] - 2021-01-06
+
+### New
+- activate timer with incoming messages
+  
+----------
 ## [v1.1.2] - 2021-01-05
 
 ### Fixed

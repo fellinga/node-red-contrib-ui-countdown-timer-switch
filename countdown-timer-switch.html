@@ -119,7 +119,7 @@ SOFTWARE.
                 addItem: function(row, index, data) {
                     const current = index+1;
                     
-                    const label = $('<span/>', {class:"node-input-countdown-label", text: current});
+                    const label = $('<span/>', {class:"node-input-countdown-label", text: current, style:"display: inline-block; text-align: right; width: 6%;"});
                     $(row).html(label);
                     
                     const numberInput = $('<input/>',{class:"node-input-countdown-name",type:"text",style:"width: 50%; margin-left: 5px;", value:data.number || 5});
