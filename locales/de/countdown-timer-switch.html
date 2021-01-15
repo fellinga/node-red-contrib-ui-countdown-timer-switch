@@ -4,8 +4,9 @@
         eingehende Nachrichten, wenn die <code>msg.payload</code> mit der konfigurierten Ein / Aus-Payload 
         übereinstimmt und schaltet den Schalter entsprechend um.
     </p>
-    <p> Der Countdown kann über eine eingehende Payload aktiviert werden, wenn diese über eine Eigenschaft <code>countdown</code> verfügt.
+    <p> Der Countdown kann über eine eingehende Nachricht aktiviert werden, wenn diese über eine Eigenschaft <code>countdown</code> verfügt.
         Der Wert von <code>msg.countdown</code> muss eine Zahl in Minuten sein. Der Schalter bleibt für die angegebene Zeit eingeschaltet.
+        Wird ein <code>msg.countdown</code> mit der Zahl 0 empfangen so wird der Schalter ausgeschalten.
     </p>
     <p>Jede Änderung am Schalter generiert eine einsprechende Nachricht mit einer
         <code>msg.payload</code> welche den konfigurierten <b>On</b> oder <b>Off</b> Wert enthält.

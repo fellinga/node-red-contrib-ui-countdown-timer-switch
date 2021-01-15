@@ -31,16 +31,16 @@ module.exports = function(RED) {
 	
 		const styles = String.raw`
 		<style>
-			#` + divPrimary + ` {
-				height:125px;
+			#${divPrimary} {
+				height:150px;
 				padding: 0 2px 0 6px;
 				overflow-x: hidden;
 			}
-			#` + divPrimary + ` md-select md-select-value {
+			#${divPrimary} md-select md-select-value {
 				color: var(--nr-dashboard-widgetTextColor);
 				border-color: var(--nr-dashboard-pageTitlebarBackgroundColor);
 			}
-			#` + divPrimary + ` .md-button {
+			#${divPrimary} .md-button {
 				margin: 0 5px 0 0;
 				width: 100%;
 				min-width: 36px;
@@ -50,7 +50,10 @@ module.exports = function(RED) {
 		;
 
 		const timerBody = String.raw`
-		<div id="` + divPrimary + `" ng-init='init(` + JSON.stringify(config) + `)'>
+		<div id="${divPrimary}" ng-init='init(${JSON.stringify(config)})'>
+			<div ng-if="${config.hasOwnProperty("label") && config.label.length > 0}" layout="row" style="max-height: 25px;">
+				<p>${config.label}<p>
+			</div>
 			<div layout="row" layout-align="space-between center" style="max-height: 50px;">
 				<div flex="80" layout="row">
 					${config.showDropdown ? `
@@ -65,18 +68,18 @@ module.exports = function(RED) {
 					`}
 				</div>
 				<div flex="20" layout="row" layout-align="end center">
-					<md-switch aria-label="switch" ng-change="switchChanged(switchState)" ng-model="switchState" ng-disabled="${config.disableSwitch}"> </md-switch>
+					<md-switch aria-label="switch" ng-change="switchChanged(switchState)" ng-model="switchState"> </md-switch>
 				</div>
 			</div>
 			<div layout="row" style="max-height: 60px;">
 				<md-input-container flex="50" ng-show="started">
 					<label style="color: var(--nr-dashboard-widgetTextColor)"> {{i18n.startedAt}} </label>
-					<input id="startsAt-` + uniqueId + `" value="00:00:00" type="time" disabled required md-no-asterisk step="1" style="color: var(--nr-dashboard-widgetTextColor)">
+					<input id="startsAt-${uniqueId}" value="00:00:00" type="time" disabled required md-no-asterisk step="1" style="color: var(--nr-dashboard-widgetTextColor)">
 					<span class="validity"></span>
 				</md-input-container>
 				<md-input-container flex="50" ng-show="ends">
 					<label style="color: var(--nr-dashboard-widgetTextColor)"> {{i18n.endsAt}} </label>
-					<input id="endsAt-` + uniqueId + `" value="00:00:00" type="time" disabled required md-no-asterisk step="1" style="color: var(--nr-dashboard-widgetTextColor)">
+					<input id="endsAt-${uniqueId}" value="00:00:00" type="time" disabled required md-no-asterisk step="1" style="color: var(--nr-dashboard-widgetTextColor)">
 					<span class="validity"></span>
 				</md-input-container>
 			</div>
@@ -123,21 +126,22 @@ module.exports = function(RED) {
 			}
 
 			function activateTimer(millis) {
-				if (millis < 1 || millis > 2147483647) return;
+				if (isNaN(millis) || millis < 1 || millis > 2147483647) return;
 
-				node.send({payload: setStatus(true)});
+				node.send(prepareMessage(true));
 				currentState.ends = currentState.started + millis;
 
 				timeout = setTimeout(function() {
-					node.send({payload: setStatus(false)});
+					node.send(prepareMessage(false));
 				}, currentState.ends - new Date().getTime());
 			}
 
-			function setStatus(value) {
+			function prepareMessage(value) {
 				if (timeout) clearTimeout(timeout);
 
 				if (value) {
 					currentState.started = new Date().getTime();
+					currentState.ends = null;
 					currentState.switchState = value;
 					node.status({fill: "green", shape: "dot", text: "on" });
 				} else {
@@ -153,7 +157,9 @@ module.exports = function(RED) {
 				if (payloadType === "date") value = Date.now();
 				else value = RED.util.evaluateNodeProperty(payload,payloadType,node);
 
-				return value; 
+				const msg = {payload: value};
+				if (config.topic) msg.topic = config.topic;
+				return msg; 
 			}
 			
 			config.i18n = RED._("countdown-timer-switch.ui", { returnObjects: true });
@@ -171,13 +177,19 @@ module.exports = function(RED) {
 					persistantFrontEndValue : true,
 					beforeEmit: function (msg, value) {
 						if (msg.hasOwnProperty("countdown") && Number.isInteger(msg.countdown)) {
-							activateTimer(msg.countdown*60*1000);
+							if (msg.countdown === 0) {
+								node.send(prepareMessage(false));
+							} else {
+								activateTimer(msg.countdown*60*1000);
+							}
 						} else {
 							if (value === RED.util.evaluateNodeProperty(config.onvalue,config.onvalueType,node)) {
-								setStatus(true);
+								prepareMessage(true);
+								if (config.topic) msg.topic = config.topic;
 								node.send(msg);
 							} else if (value === RED.util.evaluateNodeProperty(config.offvalue,config.offvalueType,node)) {
-								setStatus(false);
+								prepareMessage(false);
+								if (config.topic) msg.topic = config.topic;
 								node.send(msg);
 							}
 						}
@@ -190,7 +202,7 @@ module.exports = function(RED) {
 								delete orig.msg.payload;
 								return [null];
 							}
-							orig.msg.payload = setStatus(orig.msg.payload);
+							orig.msg = prepareMessage(orig.msg.payload);
 							return orig.msg;
 						}
 					},
@@ -216,14 +228,8 @@ module.exports = function(RED) {
 						}
 
 						$scope.switchChanged = function(switchState) {
-							$scope.sendPayload(switchState);
-						  };
-
-						$scope.sendPayload = function(payload) {
-							if ($scope.msg) $scope.msg.payload = payload;
-							else $scope.msg = {payload: payload};
-							$scope.send($scope.msg);
-						}
+							$scope.send({payload: switchState});
+						};
 
 						$scope.getState = function() {
 							$.ajax({

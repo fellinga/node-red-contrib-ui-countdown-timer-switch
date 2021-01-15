@@ -9,10 +9,9 @@
             "minutes": "minutes",
             "whenClicked": "When clicked, send:",
             "whenOnClicked": "On Payload",
-            "whenOffClicked": "Off Payload",
-            "dropdown": "Dropdown"
+            "whenOffClicked": "Off Payload"
         },
-        "dropdownDesc": "Show a dropdown menu instead of buttons",
+        "dropdownDesc": "Show a dropdown menu instead of buttons: ",
         "ui": {
             "startedAt": "Started at",
             "endsAt": "Ends at",

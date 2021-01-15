@@ -1,7 +1,7 @@
 # node-red-contrib-ui-countdown-timer-switch
 A node-red-ui countdown timer switch for the Node-RED Dashboard.  
 
-![](images/cts.jpg)
+![](images/cts.png)
 
 ## Install
   
@@ -20,6 +20,11 @@ Add a countdown-timer-switch-node to your flow. Open the dashboard, by default y
 Each button has a label with a number that indicates how long the switch stays on (in minutes). Click one of
 those buttons and the switch will be on for the specific amount of time.
 
+### Input
+
+The countdown can be activated via an incoming message if it has a property countdown.
+The value of msg.countdown must be a number in minutes. The switch will stay on for
+the specified amount of time. A msg.countdown with a value of 0 turns the switch off.
 
 ## History
   

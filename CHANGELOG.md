@@ -1,6 +1,12 @@
 # Changelog
 
 ----------
+## [v1.3.0] - 2021-01-15
+
+### New
+- optional label and msg.topic
+  
+----------
 ## [v1.2.0] - 2021-01-06
 
 ### New

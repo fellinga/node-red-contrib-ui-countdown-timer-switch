@@ -4,9 +4,9 @@
         if the <code> msg.payload </code> matches the configured on/off payload and 
         toggles the switch accordingly.
     </p>
-    <p> The countdown can be activated via an incoming payload if it has a property <code>countdown</code>.
+    <p> The countdown can be activated via an incoming message if it has a property <code>countdown</code>.
         The value of <code>msg.countdown</code> must be a number in minutes. The switch will stay on for
-        the specified amount of time.
+        the specified amount of time. A <code>msg.countdown</code> with a value of 0 turns the switch off.
     </p>
     <p>Each change in the state of the switch will generate
         a <code>msg.payload</code> with the specified <b>On</b> and <b>Off</b> values.

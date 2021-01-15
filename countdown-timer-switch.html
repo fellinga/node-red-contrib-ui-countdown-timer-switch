@@ -33,9 +33,17 @@ SOFTWARE.
         <input type="hidden" id="node-input-height">
         <button class="editor-button" id="node-input-size"></button>
     </div>
+    <div class="form-row">
+        <label for="node-input-label"><i class="fa fa-i-cursor"></i> Label</label>
+        <input type="text" id="node-input-label">
+    </div>
     <label for="form-row node-input-countdown-container-row"><i class="fa fa-clock-o"></i> <span data-i18n="countdown-timer-switch.label.countdowns"></span> </label>
     <div class="form-row node-input-countdown-container-row">
         <ol id="node-input-countdown-container"></ol>
+    </div>
+    <div class="form-row">
+        <label style="width:auto"for="node-input-showDropdown"><i class="fa fa-get-pocket"></i> <span data-i18n="countdown-timer-switch.dropdownDesc"></span> </label>
+        <input type="checkbox" id="node-input-showDropdown" style="display: inline-block; width: auto; vertical-align: top;">
     </div>
     <div class="form-row">
         <label style="width:auto" for="node-input-onvalue"><i class="fa fa-envelope-o"></i> <span data-i18n="countdown-timer-switch.label.whenClicked"></span> </label>
@@ -51,9 +59,8 @@ SOFTWARE.
         <input type="hidden" id="node-input-offvalueType">
     </div>
     <div class="form-row">
-        <label for="node-input-showDropdown"><i class="fa fa-get-pocket"></i> <span data-i18n="countdown-timer-switch.label.dropdown"></span> </label>
-        <input type="checkbox" id="node-input-showDropdown" style="display: inline-block; width: auto; vertical-align: top;">
-        <span data-i18n="countdown-timer-switch.dropdownDesc"></span>
+        <label for="node-input-topic" style="padding-left:25px; margin-right:-25px">Topic</label>
+        <input type="text" id="node-input-topic">
     </div>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="countdown-timer-switch.label.name"></span> </label>
@@ -67,6 +74,7 @@ SOFTWARE.
         color: 'rgb( 63, 173, 181)',
         defaults: {
             name: {value: ''},
+            label: {value: ''},
             group: {type: 'ui_group', required:true},
             order: {value: 0},
             width: {
@@ -87,6 +95,7 @@ SOFTWARE.
             onvalueType: {value: 'bool'},
             offvalue: {value: false, required:true, validate: (RED.validators.hasOwnProperty('typedInput')?RED.validators.typedInput('offvalueType'):function(v) { return true})},
             offvalueType: {value: 'bool'},
+            topic: {value: ''},
             showDropdown: {value: false},
         },
         inputs:1,
@@ -115,7 +124,7 @@ SOFTWARE.
                 types: ['str','num','bool','json','bin','date','flow','global']
             });
 
-            $("#node-input-countdown-container").css('min-height','222px').editableList({
+            $("#node-input-countdown-container").css('min-height','165px').editableList({
                 addItem: function(row, index, data) {
                     const current = index+1;
                     

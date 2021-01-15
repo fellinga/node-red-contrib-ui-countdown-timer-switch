@@ -9,10 +9,9 @@
             "minutes": "Minuten",
             "whenClicked": "Wenn geklickt, sende:",
             "whenOnClicked": "Ein Payload",
-            "whenOffClicked": "Aus Payload",
-            "dropdown": "Auswahlfeld"
+            "whenOffClicked": "Aus Payload"
         },
-        "dropdownDesc": "Zeige ein Auswahlfeld anstatt der Buttons",
+        "dropdownDesc": "Zeige ein Auswahlfeld anstatt der Buttons: ",
         "ui": {
             "startedAt": "Gestartet um",
             "endsAt": "Läuft bis",
