@@ -1,6 +1,12 @@
 # Changelog
 
 ----------
+## [v1.3.1] - 2021-06-04
+
+### Fixed
+- status at node closing
+
+----------
 ## [v1.3.0] - 2021-01-15
 
 ### New
