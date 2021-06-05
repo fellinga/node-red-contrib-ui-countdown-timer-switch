@@ -9,9 +9,12 @@
             "minutes": "Minuten",
             "whenClicked": "Wenn geklickt, sende:",
             "whenOnClicked": "Ein Payload",
-            "whenOffClicked": "Aus Payload"
+            "whenOffClicked": "Aus Payload",
+            "state": "Status"
         },
         "dropdownDesc": "Zeige ein Auswahlfeld anstatt der Buttons: ",
+        "dontOutputStateDesc": "Status nicht an msg.state anfügen",
+        "outputStateDesc": "Status an msg.state anfügen",
         "ui": {
             "startedAt": "Gestartet um",
             "endsAt": "Läuft bis",

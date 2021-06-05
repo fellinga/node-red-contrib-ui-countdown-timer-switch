@@ -113,55 +113,7 @@ module.exports = function(RED) {
 
 			RED.nodes.createNode(this,config);
 			const node = this;
-			let timeout = null;
-			let currentState = {started : null, ends: null, switchState: false};
 
-			this.getStateCallback = function getStateCallback(req, res) {
-				res.send(currentState);
-			}
-
-			this.setTimoutCallback = function setTimoutCallback(req, res) {
-				activateTimer(Number(req.params.value));
-				res.end();
-			}
-
-			function activateTimer(millis) {
-				if (isNaN(millis) || millis < 1 || millis > 2147483647) return;
-
-				node.send(prepareMessage(true));
-				currentState.ends = currentState.started + millis;
-
-				timeout = setTimeout(function() {
-					node.send(prepareMessage(false));
-				}, currentState.ends - new Date().getTime());
-			}
-
-			function prepareMessage(value) {
-				if (timeout) clearTimeout(timeout);
-
-				if (value) {
-					currentState.started = new Date().getTime();
-					currentState.ends = null;
-					currentState.switchState = value;
-					node.status({fill: "green", shape: "dot", text: "on" });
-				} else {
-					currentState.started = null;
-					currentState.ends = null;
-					currentState.switchState = value;
-					node.status({fill: "red", shape: "ring", text: "off" });
-				}
-				
-				const payload = value ? config.onvalue : config.offvalue;
-				const payloadType = value ? config.onvalueType : config.offvalueType;
-				
-				if (payloadType === "date") value = Date.now();
-				else value = RED.util.evaluateNodeProperty(payload,payloadType,node);
-
-				const msg = {payload: value};
-				if (config.topic) msg.topic = config.topic;
-				return msg; 
-			}
-			
 			config.i18n = RED._("countdown-timer-switch.ui", { returnObjects: true });
 
 			if (checkConfig(config, node)) {
@@ -186,10 +138,12 @@ module.exports = function(RED) {
 							if (value === RED.util.evaluateNodeProperty(config.onvalue,config.onvalueType,node)) {
 								prepareMessage(true);
 								if (config.topic) msg.topic = config.topic;
+								if (config.outputState) msg.state = getState();
 								node.send(msg);
 							} else if (value === RED.util.evaluateNodeProperty(config.offvalue,config.offvalueType,node)) {
 								prepareMessage(false);
 								if (config.topic) msg.topic = config.topic;
+								if (config.outputState) msg.state = getState();
 								node.send(msg);
 							}
 						}
@@ -284,10 +238,77 @@ module.exports = function(RED) {
 					}
 				});
 
+				let timeout = setTimeout(() => {
+					let state = node.context().get('state');
+					if (state && state.hasOwnProperty("started") && state.hasOwnProperty("ends") && state.hasOwnProperty("switchState")) {
+						if (state.ends != null) {
+							state.ends > new Date().getTime() ? activateTimer(state.ends - new Date().getTime()) : node.send(prepareMessage(false));
+						} else if (state.started != null) {
+							node.send(prepareMessage(true));
+						}
+					} else {
+						state = {started : null, ends: null, switchState: false};
+						node.context().set('state', state);
+						node.status({});
+					}
+				}, 1500);
+
+				function getState() {
+					return node.context().get('state') || {started : null, ends: null, switchState: false};
+				}
+
+				function setState(state) {
+					node.context().set('state', state);
+				}
+
+				function activateTimer(millis) {
+					if (isNaN(millis) || millis < 1 || millis > 2147483647) return;
+
+					node.send(prepareMessage(true, millis));
+
+					timeout = setTimeout(function() {
+						node.send(prepareMessage(false));
+					}, getState().ends - new Date().getTime());
+				}
+
+				function prepareMessage(value, millis = 0) {
+					if (timeout) clearTimeout(timeout);
+
+					if (value) {
+						const now = new Date().getTime();
+						const then = millis > 0 ? now+millis : null;
+						setState({started: now, ends: then, switchState: value});
+						node.status({fill: "green", shape: "dot", text: "on" });
+					} else {
+						setState({started : null, ends: null, switchState: value});
+						node.status({fill: "red", shape: "ring", text: "off" });
+					}
+					
+					const payload = value ? config.onvalue : config.offvalue;
+					const payloadType = value ? config.onvalueType : config.offvalueType;
+					
+					if (payloadType === "date") value = Date.now();
+					else value = RED.util.evaluateNodeProperty(payload,payloadType,node);
+
+					const msg = {payload: value};
+					if (config.topic) msg.topic = config.topic;
+					if (config.outputState) msg.state = getState();
+
+					return msg; 
+				}
+
+				node.getStateCallback = function getStateCallback(req, res) {
+					res.send(getState());
+				}
+
+				node.setTimoutCallback = function setTimoutCallback(req, res) {
+					activateTimer(Number(req.params.value));
+					res.end();
+				}
+
 				node.on("close", function() {
 					if (done) {
 						clearTimeout(timeout);
-						node.status({});
 						done();
 					}
 				});
@@ -298,7 +319,8 @@ module.exports = function(RED) {
     }
 	RED.nodes.registerType("ui_countdown_timer_switch",CountdownTimerSwitchNode);
 
-	const uiPath = ((RED.settings.ui || {}).path) || 'ui';
+	let uiPath = ((RED.settings.ui || {}).path);
+	if (uiPath == undefined) uiPath = 'ui';
 	let nodePath = '/' + uiPath + '/countdown-timer-switch/getNode/:nodeId';
 	nodePath = nodePath.replace(/\/+/g, '/');
 

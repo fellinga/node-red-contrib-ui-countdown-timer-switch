@@ -1,6 +1,14 @@
 # Changelog
 
 ----------
+## [v1.4.0] - 2021-06-05
+
+### New
+- data is now stored in node.context
+- restores countdowns after redeploy
+- added option to output state via msg.state
+
+----------
 ## [v1.3.1] - 2021-06-04
 
 ### Fixed

@@ -9,9 +9,12 @@
             "minutes": "minutes",
             "whenClicked": "When clicked, send:",
             "whenOnClicked": "On Payload",
-            "whenOffClicked": "Off Payload"
+            "whenOffClicked": "Off Payload",
+            "state": "State"
         },
         "dropdownDesc": "Show a dropdown menu instead of buttons: ",
+        "dontOutputStateDesc": "Don't add state to output (msg.state)",
+        "outputStateDesc": "Add state to output (msg.state)",
         "ui": {
             "startedAt": "Started at",
             "endsAt": "Ends at",
