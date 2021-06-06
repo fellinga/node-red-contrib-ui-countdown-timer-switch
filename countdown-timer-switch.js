@@ -28,7 +28,7 @@ module.exports = function(RED) {
 	function HTML(config) {
 		const uniqueId = config.id.replace(".", "");
 		const divPrimary = "ui-cts-" + uniqueId;
-	
+
 		const styles = String.raw`
 		<style>
 			#${divPrimary} {
@@ -47,7 +47,7 @@ module.exports = function(RED) {
 				height: 36px;
 			}
 		</style>`
-		;
+			;
 
 		const timerBody = String.raw`
 		<div id="${divPrimary}" ng-init='init(${JSON.stringify(config)})'>
@@ -94,24 +94,24 @@ module.exports = function(RED) {
 
 	function checkConfig(config, node) {
 		if (!config) {
-		  node.error(RED._("ui_countdown_timer_switch.error.no-config"));
-		  return false;
+			node.error(RED._("ui_countdown_timer_switch.error.no-config"));
+			return false;
 		}
 		if (!config.hasOwnProperty("group")) {
-		  node.error(RED._("ui_countdown_timer_switch.error.no-group"));
-		  return false;
+			node.error(RED._("ui_countdown_timer_switch.error.no-group"));
+			return false;
 		}
 		return true;
 	}
 
-    function CountdownTimerSwitchNode(config) {
+	function CountdownTimerSwitchNode(config) {
 		try {
 			let ui = undefined;
-			if(ui === undefined) {
+			if (ui === undefined) {
 				ui = RED.require("node-red-dashboard")(RED);
 			}
 
-			RED.nodes.createNode(this,config);
+			RED.nodes.createNode(this, config);
 			const node = this;
 
 			config.i18n = RED._("countdown-timer-switch.ui", { returnObjects: true });
@@ -126,31 +126,31 @@ module.exports = function(RED) {
 					emitOnlyNewValues: false,
 					forwardInputMessages: false,
 					storeFrontEndInputAsState: true,
-					persistantFrontEndValue : true,
-					beforeEmit: function (msg, value) {
+					persistantFrontEndValue: true,
+					beforeEmit: function(msg, value) {
 						if (msg.hasOwnProperty("countdown") && Number.isInteger(msg.countdown)) {
 							if (msg.countdown === 0) {
 								node.send(prepareMessage(false));
 							} else {
-								activateTimer(msg.countdown*60*1000);
+								activateTimer(msg.countdown * 60 * 1000);
 							}
 						} else {
-							if (value === RED.util.evaluateNodeProperty(config.onvalue,config.onvalueType,node)) {
+							if (value === RED.util.evaluateNodeProperty(config.onvalue, config.onvalueType, node)) {
 								prepareMessage(true);
 								if (config.topic) msg.topic = config.topic;
 								if (config.outputState) msg.state = getState();
 								node.send(msg);
-							} else if (value === RED.util.evaluateNodeProperty(config.offvalue,config.offvalueType,node)) {
+							} else if (value === RED.util.evaluateNodeProperty(config.offvalue, config.offvalueType, node)) {
 								prepareMessage(false);
 								if (config.topic) msg.topic = config.topic;
 								if (config.outputState) msg.state = getState();
 								node.send(msg);
 							}
 						}
-						
-						return {msg: msg};
+
+						return { msg: msg };
 					},
-					beforeSend: function (msg, orig) {
+					beforeSend: function(msg, orig) {
 						if (orig && orig.msg) {
 							if (orig.msg.payload === "updateUis") {
 								delete orig.msg.payload;
@@ -160,8 +160,8 @@ module.exports = function(RED) {
 							return orig.msg;
 						}
 					},
-					initController: function ($scope) {
-						$scope.init = function (config) {
+					initController: function($scope) {
+						$scope.init = function(config) {
 							$scope.nodeId = config.id;
 							$scope.i18n = config.i18n;
 							$scope.countdowns = config.countdowns;
@@ -178,11 +178,11 @@ module.exports = function(RED) {
 						}
 
 						$scope.buttonPressed = function(minutes) {
-							$scope.setServerTimeout(minutes*60*1000);
+							$scope.setServerTimeout(minutes * 60 * 1000);
 						}
 
 						$scope.switchChanged = function(switchState) {
-							$scope.send({payload: switchState});
+							$scope.send({ payload: switchState });
 						};
 
 						$scope.getState = function() {
@@ -220,7 +220,7 @@ module.exports = function(RED) {
 								dataType: 'json',
 								async: true,
 								complete: function() {
-									$scope.send({payload: "updateUis"});
+									$scope.send({ payload: "updateUis" });
 								}
 							});
 						}
@@ -228,8 +228,8 @@ module.exports = function(RED) {
 						$scope.minutesToReadable = function(minutes) {
 							const h = Math.floor(minutes / 60);
 							const m = Math.floor(minutes % 60);
-							const s = ((minutes - (h*60) - m) * 60).toFixed(0);
-							return (h > 0 ? h + $scope.i18n.shortHours + " " : "") + (m > 0 ? m + $scope.i18n.shortMinutes + " "  : "") + (s > 0 ? s + $scope.i18n.shortSeconds + " "  : "");
+							const s = ((minutes - (h * 60) - m) * 60).toFixed(0);
+							return (h > 0 ? h + $scope.i18n.shortHours + " " : "") + (m > 0 ? m + $scope.i18n.shortMinutes + " " : "") + (s > 0 ? s + $scope.i18n.shortSeconds + " " : "");
 						}
 
 						$scope.getElement = function(elementId) {
@@ -247,14 +247,14 @@ module.exports = function(RED) {
 							node.send(prepareMessage(true));
 						}
 					} else {
-						state = {started : null, ends: null, switchState: false};
+						state = { started: null, ends: null, switchState: false };
 						node.context().set('state', state);
 						node.status({});
 					}
 				}, 1500);
 
 				function getState() {
-					return node.context().get('state') || {started : null, ends: null, switchState: false};
+					return node.context().get('state') || { started: null, ends: null, switchState: false };
 				}
 
 				function setState(state) {
@@ -276,25 +276,25 @@ module.exports = function(RED) {
 
 					if (value) {
 						const now = new Date().getTime();
-						const then = millis > 0 ? now+millis : null;
-						setState({started: now, ends: then, switchState: value});
-						node.status({fill: "green", shape: "dot", text: "on" });
+						const then = millis > 0 ? now + millis : null;
+						setState({ started: now, ends: then, switchState: value });
+						node.status({ fill: "green", shape: "dot", text: "on" });
 					} else {
-						setState({started : null, ends: null, switchState: value});
-						node.status({fill: "red", shape: "ring", text: "off" });
+						setState({ started: null, ends: null, switchState: value });
+						node.status({ fill: "red", shape: "ring", text: "off" });
 					}
-					
+
 					const payload = value ? config.onvalue : config.offvalue;
 					const payloadType = value ? config.onvalueType : config.offvalueType;
-					
-					if (payloadType === "date") value = Date.now();
-					else value = RED.util.evaluateNodeProperty(payload,payloadType,node);
 
-					const msg = {payload: value};
+					if (payloadType === "date") value = Date.now();
+					else value = RED.util.evaluateNodeProperty(payload, payloadType, node);
+
+					const msg = { payload: value };
 					if (config.topic) msg.topic = config.topic;
 					if (config.outputState) msg.state = getState();
 
-					return msg; 
+					return msg;
 				}
 
 				node.getStateCallback = function getStateCallback(req, res) {
@@ -313,11 +313,11 @@ module.exports = function(RED) {
 					}
 				});
 			}
-		} catch(error) {
+		} catch (error) {
 			console.log("CountdownTimerSwitchNode:", error);
 		}
-    }
-	RED.nodes.registerType("ui_countdown_timer_switch",CountdownTimerSwitchNode);
+	}
+	RED.nodes.registerType("ui_countdown_timer_switch", CountdownTimerSwitchNode);
 
 	let uiPath = ((RED.settings.ui || {}).path);
 	if (uiPath == undefined) uiPath = 'ui';
