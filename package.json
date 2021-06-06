@@ -8,7 +8,7 @@
   },
   "author": "Mario Fellinger <mario.fellinger@outlook.com>",
   "license": "MIT",
-  "node-red" : {
+  "node-red": {
     "nodes": {
       "countdown_timer_switch": "countdown-timer-switch.js"
     }
