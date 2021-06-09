@@ -86,7 +86,7 @@ SOFTWARE.
             order: { value: 0 },
             width: {
                 value: 0,
-                validate: function (v) {
+                validate: function(v) {
                     let valid = true
                     const width = v || 0;
                     const currentGroup = $('#node-input-group').val() || this.group;
@@ -98,9 +98,9 @@ SOFTWARE.
             },
             height: { value: 0 },
             countdowns: { value: ["5", "10", "15", "30"] },
-            onvalue: { value: true, required: true, validate: (RED.validators.hasOwnProperty('typedInput') ? RED.validators.typedInput('onvalueType') : function (v) { return true }) },
+            onvalue: { value: true, required: true, validate: (RED.validators.hasOwnProperty('typedInput') ? RED.validators.typedInput('onvalueType') : function(v) { return true }) },
             onvalueType: { value: 'bool' },
-            offvalue: { value: false, required: true, validate: (RED.validators.hasOwnProperty('typedInput') ? RED.validators.typedInput('offvalueType') : function (v) { return true }) },
+            offvalue: { value: false, required: true, validate: (RED.validators.hasOwnProperty('typedInput') ? RED.validators.typedInput('offvalueType') : function(v) { return true }) },
             offvalueType: { value: 'bool' },
             topic: { value: '' },
             outputState: { value: '' },
@@ -111,8 +111,8 @@ SOFTWARE.
         outputLabels: ["switch position", "on branch", "off branch"],
         icon: "av_timer.png",
         paletteLabel: "ui countdown switch",
-        label: function () { return this.name || "ui countdown switch"; },
-        oneditprepare: function () {
+        label: function() { return this.name || "ui countdown switch"; },
+        oneditprepare: function() {
             const node = this;
 
             $("#node-input-size").elementSizer({
@@ -134,7 +134,7 @@ SOFTWARE.
             });
 
             $("#node-input-countdown-container").css('min-height', '165px').editableList({
-                addItem: function (row, index, data) {
+                addItem: function(row, index, data) {
                     const current = index + 1;
 
                     const label = $('<span/>', { class: "node-input-countdown-label", text: current, style: "display: inline-block; text-align: right; width: 6%;" });
@@ -146,17 +146,17 @@ SOFTWARE.
                     const finalspan = $('<span/>', { style: "margin-left: 5px; margin-top: 6px;" }).appendTo(row);
                     finalspan.append(node._("countdown-timer-switch.label.minutes"));
                 },
-                removeItem: function (opt) {
+                removeItem: function(opt) {
                     const countdowns = $("#node-input-countdown-container").editableList('items');
-                    countdowns.each(function (i) {
+                    countdowns.each(function(i) {
                         $(this).find(".node-input-countdown-label").html(i + 1);
                     });
 
                     if (countdowns.length === 0) $("#node-input-countdown-container").editableList('addItem', { number: "5" });
                 },
-                sortItems: function (rules) {
+                sortItems: function(rules) {
                     const countdowns = $("#node-input-countdown-container").editableList('items');
-                    countdowns.each(function (i) {
+                    countdowns.each(function(i) {
                         $(this).find(".node-input-countdown-label").html(i + 1);
                     });
                 },
@@ -168,12 +168,12 @@ SOFTWARE.
                 $("#node-input-countdown-container").editableList('addItem', { number: this.countdowns[i] });
             }
         },
-        oneditsave: function () {
+        oneditsave: function() {
             const node = this;
             node.countdowns = [];
             const countdowns = $("#node-input-countdown-container").editableList('items');
 
-            countdowns.each(function (i) {
+            countdowns.each(function(i) {
                 const countdown = $(this);
                 let countdownName = countdown.find(".node-input-countdown-name").typedInput('value');
                 if (countdownName != "" && !node.countdowns.includes(countdownName)) {
@@ -181,7 +181,7 @@ SOFTWARE.
                 }
             });
         },
-        oneditresize: function (size) {
+        oneditresize: function(size) {
         }
     });
 </script>
