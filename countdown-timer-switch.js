@@ -155,7 +155,7 @@ module.exports = function(RED) {
 								if (config.topic) msg.topic = config.topic;
 								if (config.outputState) msg.state = getState();
 								node.send([msg, statusMsg]);
-							} else if (value === RED.util.evaluateNodeProperty(config.offvalue,config.offvalueType,node)) {
+							} else if (value === RED.util.evaluateNodeProperty(config.offvalue, config.offvalueType, node)) {
 								prepareMessage(false);
 								if (config.topic) msg.topic = config.topic;
 								if (config.outputState) msg.state = getState();
