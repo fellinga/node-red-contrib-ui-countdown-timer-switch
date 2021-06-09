@@ -126,11 +126,26 @@ module.exports = function(RED) {
 					emitOnlyNewValues: false,
 					forwardInputMessages: false,
 					storeFrontEndInputAsState: true,
-					persistantFrontEndValue: true,
+					persistantFrontEndValue : true,
 					beforeEmit: function(msg, value) {
-						if (msg.hasOwnProperty("countdown") && Number.isInteger(msg.countdown)) {
+						let statusMsg = null;
+						if (msg.hasOwnProperty("topic") && msg.topic === "status"){
+							const state = getState();
+							let stateProp = "state";
+
+							if (msg.hasOwnProperty("state")) {
+								stateProp = msg.state;
+							}
+							statusMsg = msg;
+							statusMsg[stateProp] = state;
+							node.send([
+								null,
+								state.switchState ? statusMsg : null,
+								!state.switchState ? statusMsg : null
+							]);
+						} else if (msg.hasOwnProperty("countdown") && Number.isInteger(msg.countdown)) {
 							if (msg.countdown === 0) {
-								node.send(prepareMessage(false));
+								node.send([prepareMessage(false), statusMsg]);
 							} else {
 								activateTimer(msg.countdown * 60 * 1000);
 							}
@@ -139,16 +154,16 @@ module.exports = function(RED) {
 								prepareMessage(true);
 								if (config.topic) msg.topic = config.topic;
 								if (config.outputState) msg.state = getState();
-								node.send(msg);
+								node.send([msg, statusMsg]);
 							} else if (value === RED.util.evaluateNodeProperty(config.offvalue, config.offvalueType, node)) {
 								prepareMessage(false);
 								if (config.topic) msg.topic = config.topic;
 								if (config.outputState) msg.state = getState();
-								node.send(msg);
+								node.send([msg, statusMsg]);
 							}
 						}
 
-						return { msg: msg };
+						return {msg: [msg, statusMsg]};
 					},
 					beforeSend: function(msg, orig) {
 						if (orig && orig.msg) {
