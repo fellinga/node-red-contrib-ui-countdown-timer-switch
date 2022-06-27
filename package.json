@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-ui-countdown-timer-switch",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "A ui countdown timer switch for the Node-RED Dashboard",
   "main": "countdown-timer-switch.js",
   "scripts": {
@@ -9,9 +9,13 @@
   "author": "Mario Fellinger <mario.fellinger@outlook.com>",
   "license": "MIT",
   "node-red": {
+    "version": ">=0.19.6",
     "nodes": {
       "countdown_timer_switch": "countdown-timer-switch.js"
     }
+  },
+  "engines": {
+    "node": ">=12"
   },
   "keywords": [
     "node-red",

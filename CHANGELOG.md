@@ -1,5 +1,10 @@
 # Changelog
 
+## [v1.4.1] - 2022-06-27
+
+### Changed
+- respect group width/height
+
 ----------
 ## [v1.4.0] - 2021-06-05
 

@@ -32,7 +32,7 @@ module.exports = function(RED) {
 		const styles = String.raw`
 		<style>
 			#${divPrimary} {
-				height:150px;
+				min-height: 150px;
 				padding: 0 2px 0 6px;
 				overflow-x: hidden;
 			}
@@ -122,6 +122,8 @@ module.exports = function(RED) {
 					format: HTML(config),
 					templateScope: "local",
 					group: config.group,
+					width: config.width,
+					height: config.height,
 					order: config.order,
 					emitOnlyNewValues: false,
 					forwardInputMessages: false,
