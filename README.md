@@ -1,6 +1,8 @@
 # node-red-contrib-ui-countdown-timer-switch
 A node-red-ui countdown timer switch for the Node-RED Dashboard.  
-
+___
+### NOTE: - This project is based on Angular v1 and node-red-dashboard - as both projects are now no longer maintained, this project should be considered to be deprecated as well.
+___
 ![](images/cts.png)
 
 ## Install
